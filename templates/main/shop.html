@@ -1,0 +1,64 @@
+
+{% extends "base.html" %}
+
+{% block title %} Shop  {% endblock title %}
+
+
+
+{% block pageheader %}
+<h2 class="page-font">Shop </h2>
+{% endblock pageheader %}
+{% block content %}
+{%load static%}
+
+
+{% for message in messages  %}
+<div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+ <strong></strong> {{message}}
+ <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+{% endfor %}
+
+<div class="container">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <form method="GET" class="d-flex align-items-end ms-0">
+                    <div class="me-2">
+                        <select name="category_id" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.category_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-secondary ms-0">Filter</button>
+                </form>
+            </div>
+        </div>
+
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4 mb-3">
+            <div class="d-flex">
+                <div class="card rounded-3 p-2" style="width: 14rem;">
+                    <div style="background-color: white; display: flex; align-items: center; justify-content: center; height: 12rem;">
+                        <img src="{{product.product_images.url}}" class="card-img-top" style="width: 8rem; height: auto;" alt="...">
+                    </div>
+                    <hr>
+                    <div class="card-body">
+                        <h5 class="card-title">{{product.product_name}}</h5>
+                        <h6 class="card-text">{{product.category}}</h6>
+                        <h6 class="card-text fw-bold">Rs.{{product.price}}</h6>
+                        <a href="{% url 'product_details' product.id %}" class="btn  btn-outline-secondary">View more</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock content %}

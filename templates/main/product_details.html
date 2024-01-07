@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}\V/ Kart - Product Details{% endblock title %}
+
+{% block content %}
+{% load static %}
+
+<!-- Product Details Section -->
+<div class="container mt-5">
+    <h2>{{ product.product_name }}</h2>
+    <img id="mainImage" src="{{ product.product_images.url }}" alt="Product Image" class="img-fluid mb-3">
+    <p>{{ product.description }}</p>
+    <p id="priceDisplay">
+        {% if variants %}
+            Price: {{ variants.0.price }}
+        {% else %}
+            Price: {{ product.price }}
+        {% endif %}
+    </p>
+
+    <!-- Dropdowns for Color and RAM -->
+    <select name="color" id="colorDropdown">
+        <option value="">Select Color</option>
+        {% for color in colors %}
+            <option value="{{ color.id }}" {% if color.id == selected_color_id %}selected{% endif %}>
+                {{ color.product_color }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <select name="ram" id="ramDropdown">
+        <option value="">Select RAM</option>
+        {% for ram in rams %}
+            <option value="{{ ram.id }}" {% if ram.id == selected_ram_id %}selected{% endif %}>
+                {{ ram.product_ram }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <!-- Variant Images -->
+    <div class="row mt-3">
+        {% for image in product.images.all %}
+            <div class="col-md-3 mb-3">
+                <img src="{{ image.image.url }}" alt="Variant Image" class="img-fluid variant-image">
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    // JavaScript logic to handle dropdown changes
+    document.getElementById('colorDropdown').addEventListener('change', function() {
+        var selectedColorId = this.value;
+        // Update the main image when a different color is selected
+        var selectedImage = document.querySelector(`.variant-image[data-color-id="${selectedColorId}"]`);
+        if (selectedImage) {
+            document.getElementById('mainImage').src = selectedImage.src;
+        }
+    });
+</script>
+{% endblock content %}
