@@ -6,56 +6,66 @@
 {% load static %}
 
 <!-- Product Details Section -->
-<div class="container mt-5">
+{% comment %} <div class="container mt-5">
     <h2>{{ product.product_name }}</h2>
-    <img id="mainImage" src="{{ product.product_images.url }}" alt="Product Image" class="img-fluid mb-3">
+    {% if selected_color_id %}
+        <img id="mainImage" src="{{ selected_variant.variantimage_set.first.image.url }}" alt="Product Image" class="img-fluid mb-3">
+    {% else %}
+        <img id="mainImage" src="{{ product.product_images.url }}" alt="Product Image" class="img-fluid mb-3">
+    {% endif %}
     <p>{{ product.description }}</p>
-    <p id="priceDisplay">
-        {% if variants %}
-            Price: {{ variants.0.price }}
-        {% else %}
-            Price: {{ product.price }}
-        {% endif %}
-    </p>
+<p id="priceDisplay">
+    {% if selected_ram_id %}
+        Price: {{  filtered_variants.ram_price }}
+    {% else %}
+        Price: {{ product.price }}
+    {% endif %}
+</p>
 
-    <!-- Dropdowns for Color and RAM -->
-    <select name="color" id="colorDropdown">
-        <option value="">Select Color</option>
-        {% for color in colors %}
-            <option value="{{ color.id }}" {% if color.id == selected_color_id %}selected{% endif %}>
-                {{ color.product_color }}
-            </option>
-        {% endfor %}
-    </select>
+    <!-- Form for Color and RAM selection -->
+    <form method="GET">
+        <label for="colorDropdown">Select Color:</label>
+        <select name="color" id="colorDropdown">
+            <option value="">Select Color</option>
+            {% for color in colors %}
+                <option value="{{ color.id }}" {% if color.id == selected_color_id %}selected{% endif %}>
+                    {{ color.product_color }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Apply Color</button>
+    </form>
 
-    <select name="ram" id="ramDropdown">
-        <option value="">Select RAM</option>
-        {% for ram in rams %}
-            <option value="{{ ram.id }}" {% if ram.id == selected_ram_id %}selected{% endif %}>
-                {{ ram.product_ram }}
-            </option>
-        {% endfor %}
-    </select>
+    <form method="GET">
+        <label for="ramDropdown">Select RAM:</label>
+        <select name="ram" id="ramDropdown">
+            <option value="">Select RAM</option>
+            {% for ram in rams %}
+                <option value="{{ ram.id }}" {% if ram.id == selected_ram_id %}selected{% endif %}>
+                    {{ ram.product_ram }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Apply RAM</button>
+    </form>
 
     <!-- Variant Images -->
     <div class="row mt-3">
-        {% for image in product.images.all %}
+        {% for image in variant_images %}
+            {% if image.variant.color.id == selected_color_id %}
+                <div class="col-md-3 mb-3">
+                    <img src="{{ image.image.url }}" alt="Variant Image" class="img-fluid variant-image">
+                </div>
+            {% endif %}
+        {% endfor %}
+        
+        <!-- Sub Images from ProductImage model -->
+        {% for sub_image in product.images.all %}
             <div class="col-md-3 mb-3">
-                <img src="{{ image.image.url }}" alt="Variant Image" class="img-fluid variant-image">
+                <img src="{{ sub_image.image.url }}" alt="Sub Image" class="img-fluid variant-image">
             </div>
         {% endfor %}
     </div>
-</div>
+</div> {% endcomment %}
 
-<script>
-    // JavaScript logic to handle dropdown changes
-    document.getElementById('colorDropdown').addEventListener('change', function() {
-        var selectedColorId = this.value;
-        // Update the main image when a different color is selected
-        var selectedImage = document.querySelector(`.variant-image[data-color-id="${selectedColorId}"]`);
-        if (selectedImage) {
-            document.getElementById('mainImage').src = selectedImage.src;
-        }
-    });
-</script>
 {% endblock content %}
