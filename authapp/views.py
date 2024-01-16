@@ -10,6 +10,8 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes,force_str,DjangoUnicodeDecodeError
 #getting tokens 
 from .utils import TokenGenerator,generate_token
+# to redirect to specifice page after login
+from django.contrib.auth.forms import AuthenticationForm
 
 #sending mails
 from django.core.mail import send_mail,EmailMultiAlternatives
@@ -27,6 +29,7 @@ from random import randint
 
 import threading
 
+from django.urls import reverse
 class  EmailThread(threading.Thread):
    
    def __init__(self,email_message):
@@ -176,20 +179,29 @@ def OtpVerification(request):
 
 
 def loogin(request):
-     if request.method=="POST":
-      uname    = request.POST.get('username')
-      password = request.POST.get('pass1')
-      user     = authenticate(username=uname, password=password)
+    if request.method == "POST":
+        uname = request.POST.get('username')
+        password = request.POST.get('pass1')
+        user = authenticate(username=uname, password=password)
 
-      if user is not None:
-        login(request, user)
-        messages.success(request, "Log in success")
-        request.session['is_authenticated'] = True
-        return redirect('/mainapp/index')
-      else:
-        messages.warning(request, "Incorrect User Information")
-        return redirect('/auth/login')
-     return render(request,'auth/login.html')
+        if user is not None:
+            login(request, user)
+            messages.success(request, "Log in success")
+            request.session['is_authenticated'] = True
+
+            # Redirect to the product details page or a default URL if 'next' not present
+            next_param = request.GET.get('next')
+
+            if next_param:
+             return redirect(next_param)
+            else:
+               return redirect('/mainapp/index')
+
+        else:
+            messages.warning(request, "Incorrect User Information")
+            return redirect('/auth/login')
+
+    return render(request, 'auth/login.html')
 
 
 def loogout(request):

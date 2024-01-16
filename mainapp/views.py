@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from adminmanager.models import Category, Product, ProductImage
+from django.contrib.auth.decorators import login_required
 # from django.shortcuts import get_object_or_404
 # from django.db.models import F
 
@@ -35,7 +36,7 @@ def shop(request):
 def base(request):
     return render(request, 'base.html')
 
-
+@login_required(login_url='login')
 def product_details(request, product_id):
     return render(request, "main/product_details.html",)
 
@@ -62,7 +63,8 @@ def product_details(request, product_id):
 #         # Update the price of filtered_variants based on the selected RAM price
 #         filtered_variants.update(price=ram_price)
 
-#     context = {
+#     context = 
+#     {
 #     'product': product,
 #     'variants': filtered_variants,
 #     'variant_images': variant_images,
@@ -71,5 +73,5 @@ def product_details(request, product_id):
 #     'selected_color_id': int(selected_color_id) if selected_color_id else None,
 #     'selected_ram_id': int(selected_ram_id) if selected_ram_id else None,
 #     'selected_variant': filtered_variants.first() if filtered_variants.exists() else None,  # Select first variant after filter
-# }
+#      }
 #     return render(request, "main/product_details.html", context)
